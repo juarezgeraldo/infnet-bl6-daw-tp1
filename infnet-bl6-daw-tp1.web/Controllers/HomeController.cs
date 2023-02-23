@@ -1,38 +1,52 @@
-﻿using infnet_bl6_daw_tp1.Domain.Entities;
+﻿using infnet_bl6_daw_tp1.Domain.ViewModel;
 using infnet_bl6_daw_tp1.Domain.Interfaces;
 using infnet_bl6_daw_tp1.Service.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json;
 using System.Data.Entity.Infrastructure;
 using System.Diagnostics;
+using infnet_bl6_daw_tp1.Domain.Entities;
 
 namespace infnet_bl6_daw_tp1.web.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IMemoryCache _memoryCache;
         private readonly ILogger<HomeController> _logger;
         private readonly IAmigoService _amigoService;
 
-        public HomeController(ILogger<HomeController> logger, IAmigoService amigoService)
+        public HomeController(ILogger<HomeController> logger, IAmigoService amigoService, IMemoryCache memoryCache)
         {
             _logger = logger;
             _amigoService = amigoService;
+            _memoryCache = memoryCache;
+
         }
 
-        public IActionResult Index(string nomePesquisa)
+        public IActionResult Index(string nomePesquisa, List<int> selecionados)
         {
-            var amigos = _amigoService.GetAll();
+            var amigos = GetOrCreateFromCache();
 
             if (!string.IsNullOrEmpty(nomePesquisa))
             {
                 amigos = amigos.Where(amigo => amigo.NomeCompletoPossui(nomePesquisa)).ToList();
             }
-            amigos.Sort(delegate (Amigo x, Amigo y)
+            amigos.Sort(delegate (AmigoViewModel x, AmigoViewModel y)
             {
                 return x.DiasFaltantes.CompareTo(y.DiasFaltantes);
             });
-
             return View(amigos);
-        }
+/*            if (Selected.Count > 0)
+            {
+                this.SetSessionList(Selected);
+            }
+//            var all = GetOrCreateFromCache().Where(t => Selected.Contains(t.Id)).ToList();
+            var all = GetOrCreateFromCache();
+
+            return View(all);
+ */       }
 
         public IActionResult Incluir()
         {
@@ -132,7 +146,7 @@ namespace infnet_bl6_daw_tp1.web.Controllers
 
         [HttpPost, ActionName("Excluir")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ConfirmarExcluir(int id)
+        public IActionResult ConfirmarExcluir(int id)
         {
             if (_amigoService == null)
             {
@@ -141,15 +155,62 @@ namespace infnet_bl6_daw_tp1.web.Controllers
             var amigos = _amigoService.GetAll();
             var indice = amigos.FindIndex(amigo => amigo.Id == id);
             if (indice < 0) { return NotFound(); }
+            var amigoViewModel = amigos[indice];
 
-            _amigoService.Remove(amigos[indice]);
+            Amigo amigo = new Amigo();
+            amigo.Id = amigoViewModel.Id;
+            amigo.Nome = amigoViewModel.Nome;
+            amigo.Sobrenome = amigoViewModel.Sobrenome;
+            amigo.Nascimento = amigoViewModel.Nascimento;
+            amigo.Email = amigoViewModel.Email;
+
+            _amigoService.Remove(amigo);
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpPost]
+        [Route("/home/amigosSelecionados")]
+        public IActionResult AmigosSelecionados(List<int> selecionados)
+        {
+            var Selected = this.GetSessionList();
+            if (Selected.Count > 0)
+            {
+                var all = GetOrCreateFromCache().Where(t => Selected.Contains(t.Id)).ToList();
+                return View(all);
+            }
+            return View(GetOrCreateFromCache());
+
+
+        }
 
         public IActionResult Privacy()
         {
             return View();
+        }
+
+        private void SetSessionList(List<int> Selected)
+        {
+            HttpContext.Session.SetString("Selected", JsonConvert.SerializeObject(Selected));
+        }
+
+        private List<int> GetSessionList()
+        {
+            var selectedList = HttpContext.Session.GetString("Selected");
+            if (!string.IsNullOrEmpty(selectedList))
+            {
+                return JsonConvert.DeserializeObject<List<int>>(HttpContext.Session.GetString("Selected"));
+            }
+            return new List<int>();
+        }
+        private List<AmigoViewModel> GetOrCreateFromCache()
+        {
+            return _memoryCache.GetOrCreate<List<AmigoViewModel>>("AmigosCache", settings =>
+            {
+                settings.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(20);
+                settings.SlidingExpiration = TimeSpan.FromSeconds(20);
+
+                return _amigoService.GetAll();
+            });
         }
 
     }

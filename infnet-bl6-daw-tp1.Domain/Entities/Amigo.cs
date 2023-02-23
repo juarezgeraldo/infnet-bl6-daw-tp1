@@ -15,8 +15,7 @@ namespace infnet_bl6_daw_tp1.Domain.Entities
         public string Sobrenome { get; set; }
         public string Email { get; set; }
         public DateTime Nascimento { get; set; }
-
-
+/*
         [Display(Name = "Nome completo")]
         public string NomeCompleto
         {
@@ -63,5 +62,6 @@ namespace infnet_bl6_daw_tp1.Domain.Entities
         {
             return NomeCompleto.ToLowerInvariant().Contains(nomePesquisa.Trim().ToLowerInvariant());
         }
+*/
     }
 }

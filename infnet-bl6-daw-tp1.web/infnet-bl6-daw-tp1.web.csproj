@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\infnet-bl6-daw-tp1.Domain\infnet-bl6-daw-tp1.Domain.csproj" />
     <ProjectReference Include="..\infnet-bl6-daw-tp1.Service\infnet-bl6-daw-tp1.Service.csproj" />
   </ItemGroup>

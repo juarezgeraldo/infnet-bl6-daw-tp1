@@ -1,5 +1,6 @@
 ﻿using infnet_bl6_daw_tp1.Domain.Entities;
 using infnet_bl6_daw_tp1.Domain.Interfaces;
+using infnet_bl6_daw_tp1.Domain.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,17 +17,11 @@ namespace infnet_bl6_daw_tp1.Service.Services
             _dbContext = dbContext;
         }
 
-/*        public IList<TipoInvestimentoViewModel> GetAll()
+        public List<AmigoViewModel> GetAll()
         {
-            var tipoInvestimentos = _dbContext.tipoInvestimento.ToList();
+            var amigos = _dbContext.Amigos.ToList();
 
-            return TipoInvestimentoViewModel.GetAll(tipoInvestimentos);
-        }
-*/
-
-        public List<Amigo> GetAll()
-        {
-             return _dbContext.Amigos.ToList();
+            return AmigoViewModel.GetAll(amigos);
         }
         Amigo IAmigoService.Add(Amigo amigo)
         {

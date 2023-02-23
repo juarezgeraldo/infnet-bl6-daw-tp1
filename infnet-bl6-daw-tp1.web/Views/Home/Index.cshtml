@@ -1,4 +1,4 @@
-﻿@model IEnumerable<infnet_bl6_daw_tp1.Domain.Entities.Amigo>
+﻿@model IEnumerable<infnet_bl6_daw_tp1.Domain.ViewModel.AmigoViewModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -14,7 +14,8 @@
                 <tr>
                     @if (item.DiasFaltantes == 0)
                     {
-                        <td>- 
+                        <td>
+                            -
                             @Html.DisplayFor(modelItem => item.NomeCompleto)
                         </td>
                     }
@@ -38,46 +39,56 @@
         <input type="submit" value="Pesquisar" />
     </p>
 }
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.NomeCompleto)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Nascimento)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProximoAniversario)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DiasFaltantes)
-            </th>
-            <th>Açoes</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+@using (Html.BeginForm("amigosSelecionados", "home", FormMethod.Post))
+{
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.NomeCompleto)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Nascimento)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ProximoAniversario)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DiasFaltantes)
-                </td>
-                <td>
-                    <a asp-action="Alterar" asp-route-id="@item.Id">Alterar</a> |
-                    <a asp-action="Exibir" asp-route-id="@item.Id">Exibir</a> |
-                    <a asp-action="Excluir" asp-route-id="@item.Id">Excluir</a>
-                </td>
+                <th>Seleção</th>
+                <th>
+                    @Html.DisplayNameFor(model => model.NomeCompleto)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Nascimento)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ProximoAniversario)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DiasFaltantes)
+                </th>
+                <th>Açoes</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <input type="checkbox" name="Selected" value="@item.Id" />
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NomeCompleto)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Nascimento)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProximoAniversario)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DiasFaltantes)
+                    </td>
+                    <td>
+                        <a asp-action="Alterar" asp-route-id="@item.Id">Alterar</a> |
+                        <a asp-action="Exibir" asp-route-id="@item.Id">Exibir</a> |
+                        <a asp-action="Excluir" asp-route-id="@item.Id">Excluir</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <button type="submit" name="selecionados">
+        Ver amigos selecionados
+    </button>
+}

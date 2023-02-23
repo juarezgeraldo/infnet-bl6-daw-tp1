@@ -14,6 +14,11 @@ builder.Services.AddScoped<IAmigoService, AmigoService>();
 // DB Connection instance
 builder.Services.AddDbContext<infnet_bl6_daw_tp1DbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("AmigoDb")));
 
+// Session - definir distribuição de cache - in memory
+builder.Services.AddDistributedMemoryCache();
+
+// Session - Setup session
+builder.Services.AddSession();
 
 var app = builder.Build();
 
@@ -24,6 +29,9 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+
+app.UseSession();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

@@ -1,0 +1,37 @@
+﻿@model IEnumerable<infnet_bl6_daw_tp1.Domain.ViewModel.AmigoViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+<h1>Agenda de aniversários</h1>
+
+<h3>Amigos selecionados</h3>
+<form action="/home/index" method="post">
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Seleção</th>
+                <th>
+                    @Html.DisplayNameFor(model => model.NomeCompleto)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.CheckBox("isSelected", item.Selected)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NomeCompleto)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <button type="submit">
+        Enviar
+    </button>
+</form>
