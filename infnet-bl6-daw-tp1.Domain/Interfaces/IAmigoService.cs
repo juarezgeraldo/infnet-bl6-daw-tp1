@@ -12,5 +12,8 @@ namespace infnet_bl6_daw_tp1.Domain.Interfaces
         List<Amigo> GetAll();
 
         Amigo Add(Amigo amigo);
+
+        Amigo Save(Amigo amigo);
+        Amigo Remove(Amigo amigo);
     }
 }

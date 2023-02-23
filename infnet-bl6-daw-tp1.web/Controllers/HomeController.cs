@@ -2,6 +2,7 @@
 using infnet_bl6_daw_tp1.Domain.Interfaces;
 using infnet_bl6_daw_tp1.Service.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Data.Entity.Infrastructure;
 using System.Diagnostics;
 
 namespace infnet_bl6_daw_tp1.web.Controllers
@@ -17,7 +18,7 @@ namespace infnet_bl6_daw_tp1.web.Controllers
             _amigoService = amigoService;
         }
 
-        public async Task<IActionResult> Index(string nomePesquisa)
+        public IActionResult Index(string nomePesquisa)
         {
             var amigos = _amigoService.GetAll();
 
@@ -40,16 +41,111 @@ namespace infnet_bl6_daw_tp1.web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Incluir([Bind("Id,Nome,Sobrenome,Email,Nascimento")] Amigo amigo)
+        public IActionResult Incluir([Bind("Id,Nome,Sobrenome,Email,Nascimento")] Amigo amigo)
         {
             if (ModelState.IsValid)
             {
                 _amigoService.Add(amigo);
-//                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
             return View(amigo);
         }
+
+        public IActionResult Alterar(int? id)
+        {
+            if (id == null || _amigoService == null)
+            {
+                return NotFound();
+            }
+
+            var amigos = _amigoService.GetAll();
+            var indice = amigos.FindIndex(amigo => amigo.Id == id);
+            if (indice < 0) { return NotFound(); }
+
+            return View(amigos[indice]);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Alterar(int id, [Bind("Id,Nome,Sobrenome,Email,Nascimento")] Amigo amigo)
+        {
+            if (id != amigo.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _amigoService.Save(amigo);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ExisteAmigo(amigo.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(amigo);
+        }
+
+        private bool ExisteAmigo(int id)
+        {
+            return _amigoService.GetAll().Any(e => e.Id == id);
+        }
+
+
+        public IActionResult Exibir(int? id)
+        {
+            if (id == null || _amigoService == null)
+            {
+                return NotFound();
+            }
+
+            var amigos = _amigoService.GetAll();
+            var indice = amigos.FindIndex(amigo => amigo.Id == id);
+            if (indice < 0) { return NotFound(); }
+
+            return View(amigos[indice]);
+        }
+
+        public IActionResult Excluir(int? id)
+        {
+            if (id == null || _amigoService == null)
+            {
+                return NotFound();
+            }
+
+            var amigos = _amigoService.GetAll();
+            var indice = amigos.FindIndex(amigo => amigo.Id == id);
+            if (indice < 0) { return NotFound(); }
+
+            return View(amigos[indice]);
+        }
+
+        [HttpPost, ActionName("Excluir")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ConfirmarExcluir(int id)
+        {
+            if (_amigoService == null)
+            {
+                return Problem("Entity set 'infnet_bl6_fdaN_atContext.Amigo'  is null.");
+            }
+            var amigos = _amigoService.GetAll();
+            var indice = amigos.FindIndex(amigo => amigo.Id == id);
+            if (indice < 0) { return NotFound(); }
+
+            _amigoService.Remove(amigos[indice]);
+            return RedirectToAction(nameof(Index));
+        }
+
 
         public IActionResult Privacy()
         {

@@ -26,13 +26,29 @@ namespace infnet_bl6_daw_tp1.Service.Services
 
         public List<Amigo> GetAll()
         {
-             return _dbContext.Amigo.ToList();
+             return _dbContext.Amigos.ToList();
         }
         Amigo IAmigoService.Add(Amigo amigo)
         {
-            return _dbContext.Amigo.Add(amigo).Entity;
-            
+            _dbContext.Add(amigo);
+            _dbContext.SaveChanges();
+            return amigo;
+
         }
 
+        Amigo IAmigoService.Save(Amigo amigo)
+        {
+            _dbContext.Update(amigo);
+            _dbContext.SaveChanges();
+            return amigo;
+
+        }
+        Amigo IAmigoService.Remove(Amigo amigo)
+        {
+            _dbContext.Remove(amigo);
+            _dbContext.SaveChanges();
+            return amigo;
+
+        }
     }
 }
