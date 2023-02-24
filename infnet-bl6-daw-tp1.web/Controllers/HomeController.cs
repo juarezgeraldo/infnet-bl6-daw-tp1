@@ -25,8 +25,14 @@ namespace infnet_bl6_daw_tp1.web.Controllers
 
         }
 
-        public IActionResult Index(string nomePesquisa, List<int> selecionados)
+        public IActionResult Index(string nomePesquisa, List<int> Selecionado)
         {
+            if (Selecionado.Count > 0)
+            {
+                this.SetSessionList(Selecionado);
+            }
+
+            var amigosSelecionados = this.GetSessionList();
             var amigos = GetOrCreateFromCache();
 
             if (!string.IsNullOrEmpty(nomePesquisa))
@@ -37,16 +43,21 @@ namespace infnet_bl6_daw_tp1.web.Controllers
             {
                 return x.DiasFaltantes.CompareTo(y.DiasFaltantes);
             });
-            return View(amigos);
-/*            if (Selected.Count > 0)
-            {
-                this.SetSessionList(Selected);
-            }
-//            var all = GetOrCreateFromCache().Where(t => Selected.Contains(t.Id)).ToList();
-            var all = GetOrCreateFromCache();
 
-            return View(all);
- */       }
+            foreach (var item in amigos)
+            {
+                if (amigosSelecionados.Contains(item.Id))
+                {
+                    item.amigoSelecionado = true;
+                }
+                else
+                {
+                    item.amigoSelecionado = false;
+                }
+            }
+
+            return View(amigos);
+        }
 
         public IActionResult Incluir()
         {
@@ -168,18 +179,43 @@ namespace infnet_bl6_daw_tp1.web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
+        [Route("/home/voltaAmigosSelecionados")]
+        public IActionResult VoltaAmigosSelecionados(List<int> Selecionado)
+        {
+            if (Selecionado.Count > 0)
+            {
+                this.SetSessionList(Selecionado);
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
         [HttpPost]
         [Route("/home/amigosSelecionados")]
-        public IActionResult AmigosSelecionados(List<int> selecionados)
+        public IActionResult AmigosSelecionados(List<int> Selecionado)
         {
-            var Selected = this.GetSessionList();
-            if (Selected.Count > 0)
+            if (Selecionado.Count > 0)
             {
-                var all = GetOrCreateFromCache().Where(t => Selected.Contains(t.Id)).ToList();
-                return View(all);
+                this.SetSessionList(Selecionado);
             }
-            return View(GetOrCreateFromCache());
 
+            var amigosSelecionados = this.GetSessionList();
+            var amigos = GetOrCreateFromCache();
+
+            foreach (var item in amigos)
+            {
+                if (amigosSelecionados.Contains(item.Id))
+                {
+                    item.amigoSelecionado = true;
+                }
+                else
+                {
+                    item.amigoSelecionado = false;
+                }
+            }
+
+            return View(amigos);
 
         }
 
@@ -188,9 +224,9 @@ namespace infnet_bl6_daw_tp1.web.Controllers
             return View();
         }
 
-        private void SetSessionList(List<int> Selected)
+        private void SetSessionList(List<int> amigosSelecionados)
         {
-            HttpContext.Session.SetString("Selected", JsonConvert.SerializeObject(Selected));
+            HttpContext.Session.SetString("Selected", JsonConvert.SerializeObject(amigosSelecionados));
         }
 
         private List<int> GetSessionList()

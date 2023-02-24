@@ -6,32 +6,40 @@
 <h1>Agenda de aniversários</h1>
 
 <h3>Amigos selecionados</h3>
-<form action="/home/index" method="post">
+<form action="/home/voltaAmigosSelecionados" method="get">
 
-    <table class="table">
+    <table class="table table-bordered">
         <thead>
-            <tr>
-                <th>Seleção</th>
+            <tr class="text-center">
+                <th>
+                    @Html.DisplayNameFor(model => model.amigoSelecionado)
+                </th>
                 <th>
                     @Html.DisplayNameFor(model => model.NomeCompleto)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Nascimento)
                 </th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model)
             {
-                <tr>
+                <tr class="text-center">
                     <td>
-                        @Html.CheckBox("isSelected", item.Selected)
+                        <input type="checkbox" name="Selecionado" value="@item.Id" checked=@item.amigoSelecionado />
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.NomeCompleto)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Nascimento)
                     </td>
                 </tr>
             }
         </tbody>
     </table>
     <button type="submit">
-        Enviar
+        Voltar
     </button>
 </form>

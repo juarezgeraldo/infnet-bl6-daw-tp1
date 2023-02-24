@@ -15,9 +15,13 @@ public class AmigoViewModel
     public string Nome { get; set; }
     public string Sobrenome { get; set; }
     public string Email { get; set; }
+
+    [Display(Name = "Data de nascimento")]
+    [DataType(DataType.Date)]
     public DateTime Nascimento { get; set; }
 
-    public bool Selected { get; set; }
+    [Display(Name = "Selecionar amigo")]
+    public bool amigoSelecionado { get; set; }
 
     public AmigoViewModel(Amigo amigo)
     {
@@ -26,7 +30,6 @@ public class AmigoViewModel
         this.Sobrenome = amigo.Sobrenome;
         this.Email = amigo.Email;
         this.Nascimento = amigo.Nascimento;
-        this.Selected = false;
     }
 
     [Display(Name = "Nome completo")]
