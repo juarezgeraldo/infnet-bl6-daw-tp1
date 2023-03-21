@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using infnet_bl6_daw_tp1.Service;
 
@@ -11,9 +12,11 @@ using infnet_bl6_daw_tp1.Service;
 namespace infnet_bl6_daw_tp1.Service.Migrations
 {
     [DbContext(typeof(infnet_bl6_daw_tp1DbContext))]
-    partial class infnet_bl6_daw_tp1DbContextModelSnapshot : ModelSnapshot
+    [Migration("20230321201559_Nuvem")]
+    partial class Nuvem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
